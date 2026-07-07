@@ -21,6 +21,14 @@ def main():
 
     if "valid" not in fieldnames:
         fieldnames = fieldnames + ["valid"]
+    if "error" not in fieldnames:
+        fieldnames = fieldnames + ["error"]
+
+    def save():
+        with open(csv_path, "w", encoding="utf-8", newline="") as outfile:
+            writer = csv.DictWriter(outfile, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
 
     for row in rows:
         site = row["site"]
@@ -29,15 +37,13 @@ def main():
         try:
             check_login(site, login, password)
             row["valid"] = "true"
+            row["error"] = ""
             print(f"OK   {site}")
         except Exception as e:
             row["valid"] = "false"
+            row["error"] = str(e)
             print(f"FAIL {site} -> {e}", file=sys.stderr)
-
-    with open(csv_path, "w", encoding="utf-8", newline="") as outfile:
-        writer = csv.DictWriter(outfile, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
+        save()
 
 if __name__ == "__main__":
     main()
