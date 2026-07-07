@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 import csv
+import socket
 import sys
 import xmlrpc.client
+
+TIMEOUT = 60
 
 def build_endpoint(site):
     return site.rstrip("/") + "/xmlrpc.php"
@@ -9,6 +12,7 @@ def build_endpoint(site):
 def check_login(site, login, password):
     endpoint = build_endpoint(site)
     server = xmlrpc.client.ServerProxy(endpoint)
+    socket.setdefaulttimeout(TIMEOUT)
     server.wp.getUsersBlogs(login, password)
 
 def main():
