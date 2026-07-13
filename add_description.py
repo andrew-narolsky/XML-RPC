@@ -10,6 +10,7 @@ def main():
 
     with open(input_path, encoding="utf-8", newline="") as infile:
         reader = csv.DictReader(infile)
+        fieldnames = reader.fieldnames
         rows = list(reader)
 
     with open(data_path, encoding="utf-8") as datafile:
@@ -19,17 +20,11 @@ def main():
         sys.exit(f"Not enough entries in {data_path}: need {len(rows)}, got {len(data)}")
 
     with open(output_path, "w", encoding="utf-8", newline="") as outfile:
-        writer = csv.writer(outfile)
-        writer.writerow(["site", "login", "password", "title", "description", "image"])
+        writer = csv.DictWriter(outfile, fieldnames=fieldnames + ["description"])
+        writer.writeheader()
         for row, entry in zip(rows, data):
-            writer.writerow([
-                row["site"],
-                row["login"],
-                row["password"],
-                entry["Title"],
-                entry["Content"],
-                entry["Image"],
-            ])
+            row["description"] = entry["Content"]
+            writer.writerow(row)
 
     print(f"Done: {output_path}")
 
